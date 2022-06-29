@@ -1,0 +1,17 @@
+.form {
+    display: flex;
+    justify-content: space-between;
+    font-size: 1rem;
+    font-weight: 500;
+}
+
+.form input {
+    font-size: 1rem;
+    margin-left: 1rem;
+    font-weight: 500;
+}
+
+.form select {
+    font-size: 1rem;
+    margin-left: 1rem;
+}
