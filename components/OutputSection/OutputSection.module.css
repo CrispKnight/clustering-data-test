@@ -4,3 +4,7 @@
     flex-wrap: wrap;
     row-gap: 1rem;
 }
+
+.status {
+    text-align: center;
+}

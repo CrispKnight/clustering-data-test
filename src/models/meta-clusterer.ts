@@ -1,6 +1,6 @@
 import { getMaxLength, compareWordLists } from '../utils/helpers';
 
-interface WorkMeta {
+export interface WorkMeta {
     tags: string[];
     description: string;
     type: string;

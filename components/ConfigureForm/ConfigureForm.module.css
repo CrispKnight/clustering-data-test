@@ -6,12 +6,21 @@
 }
 
 .form input {
+    min-width: 30px;
     font-size: 1rem;
     margin-left: 1rem;
     font-weight: 500;
+    margin-bottom: 1rem;
 }
 
 .form select {
     font-size: 1rem;
     margin-left: 1rem;
+    margin-bottom: 1rem;
+}
+
+@media (max-width: 1400px) {
+    .form {
+        flex-direction: column;
+    }
 }
