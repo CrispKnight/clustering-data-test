@@ -4,11 +4,16 @@ import Card from "../UI/Card";
 
 import classes from './ConfigureForm.module.css'
 
-interface FormProps {
-    getFormData: (file: File, wordsMinPercent: number, objectsMinPercent: number, useThumbs: boolean) => void
+interface ConfigureFormProps {
+    getFormData: (
+        file: File, 
+        wordsMinPercent: number, 
+        objectsMinPercent: number, 
+        useThumbs: boolean
+    ) => void
 }
 
-const ConfigureForm: React.FC<FormProps> = ({ getFormData }) => {
+const ConfigureForm: React.FC<ConfigureFormProps> = ({ getFormData }) => {
     const jsonFileRef = useRef<HTMLInputElement>(null);
     const objectsMinRef = useRef<HTMLInputElement>(null);
     const wordsMinRef = useRef<HTMLInputElement>(null);

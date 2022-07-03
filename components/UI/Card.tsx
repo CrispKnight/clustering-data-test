@@ -2,11 +2,11 @@ import React from "react";
 
 import classes from './Card.module.css';
 
-interface Props {
+interface CardProps {
     children: JSX.Element
 }
 
-const Card: React.FC<Props> = ({ children }) => {
+const Card: React.FC<CardProps> = ({ children }) => {
     return <div className={classes.card}>{children}</div>
 }
 

@@ -1,10 +1,9 @@
-import type { NextPage } from 'next'
 import { useState } from 'react'
-import MetaClusterer, {WorkMeta} from '../src/models/meta-clusterer'
+import type { NextPage } from 'next'
+import MetaCluster, {WorkMeta} from '../src/models/meta-cluster'
 
 import ConfigureForm from '../components/ConfigureForm/ConfigureForm'
 import OutputSection from '../components/OutputSection/OutputSection'
-
 
 
 const Home: NextPage = () => {
@@ -24,13 +23,9 @@ const Home: NextPage = () => {
     reader.onload = (event) => {
       const str = event.target!.result as string;
       const json = JSON.parse(str);
-
-      const formatData = new Promise((resolve, _) => {
-        const clusters = new MetaClusterer(json, options);
-        resolve(clusters.data);
-      })
-
-      formatData.then((data) => setWorks(data as WorkMeta[][]));
+      const clusters = new MetaCluster(json, options);
+      console.log(clusters.data.length)
+      setWorks(clusters.data);
       setStatus(null);
     }
 

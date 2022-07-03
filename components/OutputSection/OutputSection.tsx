@@ -3,7 +3,7 @@ import React from "react";
 import Card from "../UI/Card";
 import WorkCard from "./WorkCard";
 
-import { WorkMeta } from "../../src/models/meta-clusterer";
+import { WorkMeta } from "../../src/models/meta-cluster";
 import classes from './OutputSection.module.css';
 
 interface OutputSectionProps {
@@ -18,9 +18,13 @@ const OutputSection: React.FC<OutputSectionProps> = ({ clusters, status }) => {
 
     return <>
             {clusters && clusters.map(group => {
-                return <Card key={Math.random()}><div  className={classes.container}>
-                    {group.map(work => <WorkCard key={work.id} work={work}></WorkCard>)}
-                </div></Card>;
+                return <Card key={Math.random()}>
+                    <div  className={classes.container}>
+                        {group.map(work => 
+                            <WorkCard key={work.id} work={work}></WorkCard>
+                        )}
+                    </div>
+                </Card>;
             })}
         </>
 }

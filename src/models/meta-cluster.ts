@@ -1,5 +1,8 @@
 import { getMaxLength, compareWordLists } from '../utils/helpers';
 
+const DEFAULT_WORDS_MIN = 0.5; // default min words equality percent
+const DEFAULT_OBJECTS_MIN = 0.5; // default min objects equality percent
+
 export interface WorkMeta {
     tags: string[];
     description: string;
@@ -9,7 +12,7 @@ export interface WorkMeta {
     id: string;
 }
 
-interface MetaGroupOptions {
+interface MetaClusterOptions {
     minWordsEquality?: number;
     minObjectsEquality?: number;
     considerThumbnails?: boolean;
@@ -20,31 +23,57 @@ interface UnionMetaDataObj {
     tags: string[];
 }
 
-export default class MetaClusterer {
+export default class MetaCluster {
     private groupedData: WorkMeta[][] = [];
     minWordsEquality: number;
     minObjectsEquality: number;
     considerThumbnails: boolean;
 
-    constructor(public initialData: WorkMeta[], options?: MetaGroupOptions) {
-        this.minWordsEquality = options?.minWordsEquality ?? 0.5;
-        this.minObjectsEquality = options?.minObjectsEquality ?? 0.5;
+    constructor(public initialData: WorkMeta[], options?: MetaClusterOptions) {
+        this.minWordsEquality = this.validateNumberOption(
+            options?.minWordsEquality
+        )
+            ? (options!.minWordsEquality as number)
+            : DEFAULT_WORDS_MIN;
+
+        this.minObjectsEquality = this.validateNumberOption(
+            options?.minObjectsEquality
+        )
+            ? (options!.minObjectsEquality as number)
+            : DEFAULT_OBJECTS_MIN;
+
         this.considerThumbnails = options?.considerThumbnails ?? false;
 
-        this.considerThumbnails ? this._groupByThumbnail() : this._to2DList();
-
-        this._mergeClusters();
+        this.considerThumbnails ? this.groupByThumbnail() : this.to2DList();
+        this.mergeClusters();
     }
 
     public get data() {
         return this.groupedData;
     }
 
-    private _to2DList = () => {
+    /**
+     * Validates option to correspond class requirements
+     * @param option option of type 'number' to validate
+     * @returns true if option pass the validation and false if not
+     */
+    private validateNumberOption = (option: number | undefined) => {
+        return option && option >= 0 && option <= 1;
+    };
+
+    /**
+     * Formats initial data to be procesed by class
+     */
+    private to2DList = () => {
         this.groupedData = this.initialData.map((metaObj) => [metaObj]);
     };
 
-    private _groupByThumbnail = () => {
+    /**
+     * Groups initial data by thumbnails and formats it to be processed by class
+     */
+    private groupByThumbnail = () => {
+        // TODO: Rewrite with hashmap
+
         this.initialData.forEach((metaObj) => {
             const groupIndex = this.groupedData.findIndex(
                 (metasArr) => metasArr[0].thumbnail === metaObj.thumbnail
@@ -58,7 +87,12 @@ export default class MetaClusterer {
         });
     };
 
-    private _unionGroupMetaData = (data: WorkMeta[]) => {
+    /**
+     * Creates union object from list of objects to make comparisons
+     * @param data list of objects
+     * @returns union object
+     */
+    private unionGroupMetaData = (data: WorkMeta[]) => {
         let newDescription: string[] = [];
         let newTags: string[] = [];
 
@@ -83,7 +117,13 @@ export default class MetaClusterer {
         return unionDataObj;
     };
 
-    private _compareUnionObjects = (
+    /**
+     * Compares union objects on similarity by calculating objects' similarity percent
+     * @param objA first union object to compare
+     * @param objB second union object to compare
+     * @returns true if objects are same and false if not
+     */
+    private compareUnionObjects = (
         objA: UnionMetaDataObj,
         objB: UnionMetaDataObj
     ) => {
@@ -110,7 +150,10 @@ export default class MetaClusterer {
         return totalEqPercent >= this.minObjectsEquality;
     };
 
-    private _mergeClusters = () => {
+    /**
+     * Creates groupedData field by merging similar lists of objects of initial data
+     */
+    private mergeClusters = () => {
         let indexA = 0;
 
         while (indexA < this.groupedData.length - 1) {
@@ -125,14 +168,14 @@ export default class MetaClusterer {
                     continue;
                 }
 
-                const unionMetaA = this._unionGroupMetaData(
+                const unionMetaA = this.unionGroupMetaData(
                     this.groupedData[indexA]
                 );
-                const unionMetaB = this._unionGroupMetaData(
+                const unionMetaB = this.unionGroupMetaData(
                     this.groupedData[indexB]
                 );
 
-                const equal = this._compareUnionObjects(unionMetaA, unionMetaB);
+                const equal = this.compareUnionObjects(unionMetaA, unionMetaB);
 
                 if (equal) {
                     this.groupedData[indexA].push(...this.groupedData[indexB]);
